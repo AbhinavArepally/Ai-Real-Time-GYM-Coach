@@ -48,7 +48,6 @@ def main():
             tts = TextToSpeech()
             st.session_state.voice_pipeline = VoicePipeline(llm_coach, tts)
         except Exception as e:
-            st.error(e)
             st.session_state.voice_pipeline = None
 
     workout_started = st.session_state.get("workout_started", False)
@@ -107,6 +106,7 @@ def main():
 
             if end_session_button:
                 st.session_state.workout_started = False
+                
                 if st.session_state.voice_pipeline:
                     result = st.session_state.voice_pipeline.process_event(
                         event="workout_completed",
@@ -115,6 +115,7 @@ def main():
                     )
                     if result:
                         st.session_state.audio_to_play, st.session_state.coach_feedback = result
+
                 st.rerun()
 
         if workout_started:
@@ -201,29 +202,7 @@ def main():
             key="exercise-analysis",
             mode=WebRtcMode.SENDRECV,
             video_processor_factory=VideoProcessorClass,
-            #rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-            rtc_configuration={
-                "iceServers": [
-                    {
-                        "urls": "stun:global.stun.twilio.com:3478"
-                    },
-                    {
-                        "username": "dc2d2894d5a9023620c467b0e71cfa6a35457e6679785ed6ae9856fe5bdfa269",
-                        "credential": "tE2DajzSJwnsSbc123",
-                        "urls": "turn:global.turn.twilio.com:3478?transport=udp"
-                    },
-                    {
-                        "username": "dc2d2894d5a9023620c467b0e71cfa6a35457e6679785ed6ae9856fe5bdfa269",
-                        "credential": "tE2DajzSJwnsSbc123",
-                        "urls": "turn:global.turn.twilio.com:3478?transport=tcp"
-                    },
-                    {
-                        "username": "dc2d2894d5a9023620c467b0e71cfa6a35457e6679785ed6ae9856fe5bdfa269",
-                        "credential": "tE2DajzSJwnsSbc123",
-                        "urls": "turn:global.turn.twilio.com:443?transport=tcp"
-                    }
-                ]
-            },
+            rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
             media_stream_constraints={
                 "video": True,
                 "audio": False
@@ -236,7 +215,6 @@ def main():
         if context.state.playing:
             time.sleep(0.25)
             st.rerun()
-
 
     st.divider()
 
