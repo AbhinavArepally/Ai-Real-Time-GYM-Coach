@@ -17,6 +17,7 @@ from services.coaching.tts import TextToSpeech
 from services.coaching.voice_pipeline import VoicePipeline, autoplay_audio
 from dotenv import load_dotenv
 load_dotenv()
+from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration #
 
   
 def main():
@@ -202,7 +203,16 @@ def main():
             key="exercise-analysis",
             mode=WebRtcMode.SENDRECV,
             video_processor_factory=VideoProcessorClass,
-            rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+            rtc_configuration=RTCConfiguration({
+                "iceServers": [
+                    {"urls": ["stun:stun.l.google.com:19302"]},
+                    {
+                        "urls": ["turn:openrelay.metered.ca:80"],
+                        "username": "openrelayproject",
+                        "credential": "openrelayproject",
+                    },
+                ]
+            }),
             media_stream_constraints={
                 "video": True,
                 "audio": False
@@ -215,6 +225,19 @@ def main():
         if context.state.playing:
             time.sleep(0.25)
             st.rerun()
+
+        """ context = webrtc_streamer(
+            key="exercise-analysis",
+            mode=WebRtcMode.SENDRECV,
+            video_processor_factory=VideoProcessorClass,
+            rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+            media_stream_constraints={
+                "video": True,
+                "audio": False
+            },
+            async_processing=True
+        )"""
+       
 
     st.divider()
 
