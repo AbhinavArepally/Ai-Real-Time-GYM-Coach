@@ -199,20 +199,32 @@ def main():
             unsafe_allow_html=True,
         )
     else:
+        turn_username = os.getenv("TURN_USERNAME")
+        turn_credential = os.getenv("TURN_CREDENTIAL")
+
+        if not turn_username and hasattr(st, "secrets") and "TURN_USERNAME" in st.secrets:
+            turn_username = st.secrets["TURN_USERNAME"]
+            turn_credential = st.secrets["TURN_CREDENTIAL"]
+
         context = webrtc_streamer(
             key="exercise-analysis",
             mode=WebRtcMode.SENDRECV,
             video_processor_factory=VideoProcessorClass,
-            rtc_configuration=RTCConfiguration({
+            rtc_configuration={
                 "iceServers": [
                     {"urls": ["stun:stun.l.google.com:19302"]},
                     {
-                        "urls": ["turn:openrelay.metered.ca:80"],
-                        "username": "openrelayproject",
-                        "credential": "openrelayproject",
+                        "urls": ["turn:global.relay.metered.ca:80"],
+                        "username": turn_username,
+                        "credential": turn_credential,
+                    },
+                    {
+                        "urls": ["turn:global.relay.metered.ca:443"],
+                        "username": turn_username,
+                        "credential": turn_credential,
                     },
                 ]
-            }),
+            },
             media_stream_constraints={
                 "video": True,
                 "audio": False
@@ -225,18 +237,6 @@ def main():
         if context.state.playing:
             time.sleep(0.25)
             st.rerun()
-
-        """ context = webrtc_streamer(
-            key="exercise-analysis",
-            mode=WebRtcMode.SENDRECV,
-            video_processor_factory=VideoProcessorClass,
-            rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-            media_stream_constraints={
-                "video": True,
-                "audio": False
-            },
-            async_processing=True
-        )"""
        
 
     st.divider()
