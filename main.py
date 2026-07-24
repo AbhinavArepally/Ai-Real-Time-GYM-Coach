@@ -17,7 +17,7 @@ from services.coaching.tts import TextToSpeech
 from services.coaching.voice_pipeline import VoicePipeline, autoplay_audio
 from dotenv import load_dotenv
 load_dotenv()
-from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration #
+from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration 
 
   
 def main():
